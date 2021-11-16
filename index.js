@@ -1,4 +1,3 @@
-const { randomInt } = require("crypto");
 const readline = require("readline");
 const rl = readline.createInterface(process.stdin, process.stdout);
 
@@ -8,9 +7,14 @@ function ask(questionText) {
   });
 }
 // ----------- Game Functions ---------- //
+// Global Variables //
 
+let min = 1
+let max = 100
+let numberOfGuesses = 0
+
+// ------ Icebox #3: Combine the Games ----- //
 // allows the player can select which game type they'd like to play
-selectGameType();
 
 async function selectGameType() {
   let gameSelection = await ask(
@@ -21,32 +25,33 @@ async function selectGameType() {
   if (gameSelection === 1) {
     // function for regular game
     launchComputerStart();
-  } else {
-    // function for reverse-game
+  } else if (gameSelection === 2) {
+    // function for reverse-game 
     launchPlayerStart();
+  } else {
+    console.log("Please select which game type you'd like to play (1) or (2)\n >_ ");
   }
 }
 
-// determining lowest number for guess range
+// ---- Story 6: Extend the Guess Range ----- //
+async function launchComputerStart() {
 let lowest = await ask(
-  "What is the lowest number that your secret number could be?\n>_"
+  "What is the lowest number that your secret number could be?\n>_ "
 );
 lowest = parseInt(lowest);
 
 // determining highest number for guess range
 let highest = await ask(
-  "What is the highest number that your secret number could be?\n>_"
+  "What is the highest number that your secret number could be?\n>_ "
 );
-let highest = parseInt(highest);
+highest = parseInt(highest);
 
 // asking player to enter their secret number
-let secretNumber = await ask("What is your secret number?\n>_");
+let secretNumber = await ask("What is your secret number?\n>_ ");
 console.log("You entered: " + secretNumber);
-let secretNumber = parseInt(secretNumber);
+secretNumber = parseInt(secretNumber);
 
 // function getRandomNumber(min, max) {
-
-// }
 
 while (true) {
   await enterGuess(lowest, highest);
@@ -54,6 +59,7 @@ while (true) {
 
 // 'enter guess' has several nested functions that integrate together depending on certain outcomes to further gameplay
 async function enterGuess(lowest, highest) {
+
   // cpu submitting a guess using the avg b/w lowest & highest nums set by player
   cpuGuess = parseInt(parseInt(lowest) + parseInt(highest) / 2);
   // variable for presenting the cpuGuess and sets up for a player response
@@ -63,7 +69,7 @@ async function enterGuess(lowest, highest) {
   evaluateYorN(yesOrNo);
   if (evaluateYorN(yesOrNo) === true) {
     // sets up player to submit higher or lower response
-    let highOrLow = await ask("Is your number higher (H) or lower (L)?\n>_");
+    let highOrLow = await ask("Is your number higher (H) or lower (L)?\n>_ ");
     // now depending on whether the player enter H or L, the cpu will generate a new num that adjusts to the new range determined by player's response
     generateNewNum(highOrLow, cpuGuess);
   }
@@ -71,35 +77,43 @@ async function enterGuess(lowest, highest) {
 
 // here is the function previously mentioned. New cpu guess number is generated
 function generateNewNum(highOrLow, cpuGuess) {
+
+  // ----- Story 4: Modify Your Guess Range ----- //
   playerResponse = highOrLow;
   if (playerResponse === "H") {
     lowest = cpuGuess;
-  } else {
+  } else if (playerResponse === "L") {
     highest = cpuGuess;
+    // incase player responds with something other than H or L
+  } else {
+    console.log("Please only enter 'H' for Higher or 'L' for Lower.")
   }
 }
+}
 
+// ------ Story 8: Role Reversal --------- //
 // functionality for the reverse-game
 async function launchPlayerStart() {
   console.log(
     "Good choice! This round, I (the computer) will pick a secret number and YOU will try to guess what it is.\nBut first, you need to tell me the minimum and maximum numbers that I'm guessing between... "
   );
 
-  // defining the minimum (min) and maximum (max) for the reverse game
-  let min = await ask("What is the lowest number I can choose?\n>_");
+  // defining the minimum (min) and maximum (max) for the reverse game defined by player
+  let min = await ask("What is the lowest number I can choose?\n>_ ");
   min = parseInt(min);
-  let max = await ask("What is the highest number I can choose?\n>_");
-  let max = parseInt(max);
 
-  // variable for reverse-game, when cpu makes up a number
-  let cpuSecretNumber = randomInt(min, max);
-  function 
+  let max = await ask("What is the highest number I can choose?\n>_ ");
+  max = parseInt(max);
+
+  // variable for reverse-game, when cpu makes up a number using player inputs for min and max
+  // NOTE: cpu secret number is always 50 is user enters 1, 100
+  let cpuSecretNumber = Math.floor((max + min) / 2)
+  
 
   // now that cpu has chosen a secret number, player starts guessing
   let playerGuessEntered = await ask(
-    "Alright, I've choosen my secret number from the range options you just gave me. Let's see what you've got!\n>_"
+    "Alright, I've choosen my secret number from the range options you just gave me. Let's see what you've got!\n>_ "
   );
-
   playerGuess = parseInt(playerGuessEntered);
 
   // then computer program will evaluate the number entered by the player and determine if that number was higher or lower than the computer's secret number, giving informative feedback to the player about which direction to guess next
@@ -108,7 +122,7 @@ async function launchPlayerStart() {
   while(true) {
     if (playerGuess > cpuSecretNumber) {
       // player guesses higher than the secret number
-      console.log("Get ya head outta the clouds!\nYou guessed TOO HIGH!");
+      console.log("You guessed TOO HIGH!");
       // variable for the player's next guess and prompt
       nextGuess = await ask("Enter your next guess...\n>_ ");
       // ensures player's next guess is a number through parsing the string entered and returning an integer back to the program
@@ -130,45 +144,23 @@ async function launchPlayerStart() {
 ///
 }
 
-// start();
+selectGameType();
 
-// different parameters depending on the level of difficulty the player has chosen
+
+// make playAgain function
 
 //   let numberOfGuesses = 0
 //   let maximumGuesses = 10;
 
-//   if (answerNumber < randomNum) {
-//     console.log("Too Low!");
-//     console.log("You now have " +(numberOfGuesses-1)+ " guesses left!");
-//   }
-
-//   //else if statement incase the number guessed was too high
 // else if (answerNumber > randomNum) {
 //   console.log("Your guess was up in the clouds." + " Too High!");
 //   console.log("You have " + (numberOfGuesses-1) + " guesses remaining.");
 // }
 
-// //else if statement which the console will log accordingly if they guess the correct number
-// else if (answerNumber == randomNum) {
-//   console.log("WINNER WINNER WINNER");
-//   console.log("You used only " + (11-numberOfGuesses) + " guesses!");
-//   process.exit(0);
-// }
-
-// //else if statement incase the user enters something other than a number in numerical form
-// else if (answerNumber !== isNaN(answerNumber)) {
-//   console.log("Please enter a recognized number.");
-//   console.log("You have " +(numberOfGuesses-1)+ " guesses remaining!");
-// }
-
 // //if number of guesses has reached zero remaining
 // numberOfGuesses--;
-// if (numberOfGuesses == 0) {
+// if (numberOfGuesses == 10) {
 //   console.log("You have zero guess attempts remaining.");
 //   console.log("G A M E  O V E R!");
 //   console.log("May we meet again.");
 //   process.exit(0);
-// }
-
-//   process.exit()
-////////////////////////
