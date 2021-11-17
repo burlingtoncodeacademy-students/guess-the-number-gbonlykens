@@ -1,3 +1,4 @@
+const { randomInt } = require("crypto");
 const readline = require("readline");
 const rl = readline.createInterface(process.stdin, process.stdout);
 
@@ -13,9 +14,21 @@ let min = 1
 let max = 100
 let numberOfGuesses = 0
 
+// doesn't continue to rest of game after player enters name
+// function to set playerName
+// async function setPlayer () {
+//   let playerName = await ask("To get started, would you mind telling me your name?");
+//   while (playerName === '') {
+//     selectGameType();
+//   }
+//   setPlayer = (playerName).toLowerCase();
+// }
+// setPlayer(selectGameType);
+
+
+
 // ------ Icebox #3: Combine the Games ----- //
 // allows the player can select which game type they'd like to play
-
 async function selectGameType() {
   let gameSelection = await ask(
     "Welcome! If you want me (computer) to guess your number, enter (1). If you want to guess what my number is, enter (2).\n>_"
@@ -52,6 +65,16 @@ console.log("You entered: " + secretNumber);
 secretNumber = parseInt(secretNumber);
 
 // function getRandomNumber(min, max) {
+// function for reading the user's response, returning true means it will keep going until cpu guesses user's secret number
+function evaluateYorN(yesOrNo) {
+  input = yesOrNo.charAt(0).toUpperCase(0);
+  if (input === "Y") {
+    return console.log("I WIN! I WIN! I WIN!")(process.exit())
+    // playAgain();
+  } else if (input === "N") {
+    return true;
+  }
+};
 
 while (true) {
   await enterGuess(lowest, highest);
@@ -106,8 +129,7 @@ async function launchPlayerStart() {
   max = parseInt(max);
 
   // variable for reverse-game, when cpu makes up a number using player inputs for min and max
-  // NOTE: cpu secret number is always 50 is user enters 1, 100
-  let cpuSecretNumber = Math.floor((max + min) / 2)
+  let cpuSecretNumber = randomInt(Math.floor((max + min) / 2))
   
 
   // now that cpu has chosen a secret number, player starts guessing
@@ -122,21 +144,21 @@ async function launchPlayerStart() {
   while(true) {
     if (playerGuess > cpuSecretNumber) {
       // player guesses higher than the secret number
-      console.log("You guessed TOO HIGH!");
+      console.log("TOO HIGH!");
       // variable for the player's next guess and prompt
       nextGuess = await ask("Enter your next guess...\n>_ ");
       // ensures player's next guess is a number through parsing the string entered and returning an integer back to the program
       playerGuess = parseInt(nextGuess);
       // player has guessed lower than the secret number
     } else if (playerGuess < cpuSecretNumber) {
-      console.log("TOO LOW!\nGuess higher!");
+      console.log("TOO LOW!");
       nextGuess = await ask ("Enter your next guess...\n>_ ");
       // ensures integer return
       playerGuess = parseInt(nextGuess);
     } else {
       // player has guessed computer's secret number
       (playerGuess === cpuSecretNumber) 
-        console.log("WINNER WINNER CHICKEN DINNER ! ! ! ! ");
+        console.log("WINNER WINNER WINNER ! ! ! ! ");
         process.exit();
       
     }
@@ -151,11 +173,6 @@ selectGameType();
 
 //   let numberOfGuesses = 0
 //   let maximumGuesses = 10;
-
-// else if (answerNumber > randomNum) {
-//   console.log("Your guess was up in the clouds." + " Too High!");
-//   console.log("You have " + (numberOfGuesses-1) + " guesses remaining.");
-// }
 
 // //if number of guesses has reached zero remaining
 // numberOfGuesses--;
