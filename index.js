@@ -9,9 +9,9 @@ function ask(questionText) {
 }
 // ----------- Game Functions ---------- //
 // Global Variables //
-
-let min = 1
-let max = 100
+// let user choose the computer's secret number parameters through input
+// let min = 1
+// let max = 100
 let numberOfGuesses = 0
 
 // doesn't continue to rest of game after player enters name
@@ -93,6 +93,7 @@ async function enterGuess(lowest, highest) {
   if (evaluateYorN(yesOrNo) === true) {
     // sets up player to submit higher or lower response
     let highOrLow = await ask("Is your number higher (H) or lower (L)?\n>_ ");
+    highOrLow = (highOrLow).charAt(0).toUpperCase(0);
     // now depending on whether the player enter H or L, the cpu will generate a new num that adjusts to the new range determined by player's response
     generateNewNum(highOrLow, cpuGuess);
   }
@@ -129,7 +130,8 @@ async function launchPlayerStart() {
   max = parseInt(max);
 
   // variable for reverse-game, when cpu makes up a number using player inputs for min and max
-  let cpuSecretNumber = randomInt(Math.floor((max + min) / 2))
+  // let cpuSecretNumber = randomInt(Math.floor((max + min) / 2))
+  let cpuSecretNumber = randomInt(min, max);
   
 
   // now that cpu has chosen a secret number, player starts guessing
@@ -179,5 +181,11 @@ selectGameType();
 // if (numberOfGuesses == 10) {
 //   console.log("You have zero guess attempts remaining.");
 //   console.log("G A M E  O V E R!");
-//   console.log("May we meet again.");
 //   process.exit(0);
+
+// was going to make a seperate function to pass through cpuSecretNumber but RandomInt does it for me with crypto import BUT IF I HAD... :
+
+// function randomNum(min, max) {
+//   let guessRange = max - min + 1;
+//   return min + Math.floor(Math.random() * guessRange) + min;
+// }
